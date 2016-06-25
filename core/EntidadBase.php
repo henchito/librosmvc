@@ -13,7 +13,8 @@ class EntidadBase{
         $this->conectar=new Conectar();
         $this->db=$this->conectar->conexion();
          */
-        $this->conectar = null;
+         
+        // $this->conectar = null;
         $this->db = $adapter;
     }
      
@@ -26,7 +27,7 @@ class EntidadBase{
     }
      
     public function getAll(){
-        $query=$this->db->query("SELECT * FROM $this->table ORDER BY id DESC");
+        $query=$this->db->query("SELECT * FROM $this->table ORDER BY id ASC");
           
         //Devolvemos el resultset en forma de array de objetos
         while ($row = $query->fetch_object()) {
@@ -38,7 +39,7 @@ class EntidadBase{
      
     public function getById($id){
         $query=$this->db->query("SELECT * FROM $this->table WHERE id=$id");
- 
+        
         if($row = $query->fetch_object()) {
            $resultSet=$row;
         }

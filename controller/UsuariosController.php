@@ -11,24 +11,37 @@ class UsuariosController extends ControladorBase{
     }
      
     public function index(){
-        /*** AQUI HAY QUE MOSTRAR EL LOGIN ***/ 
+        //Recuperamos la sesion
+        $s = Session::getInstance();
+        if (!isset($s->usuario)){
+            //Usuario no logeado
+            $this->view("login",array());
+        } else {
+            //Usuario logeado
+            $this->view("menu",array( ));
+        }
+        
+        
+        
+        /*
         //Creamos el objeto usuario
-        $usuario=new Usuario($this->adapter); //No debería ser UsuarioModel??
+        $usuario=new Usuario($this->adapter);
          
         //Conseguimos todos los usuarios
         $allusers=$usuario->getAll();
         
         //Producto
-        /*
+        
         $producto=new Producto($this->adapter);
         $allproducts=$producto->getAll();
-        */
+        
         //Cargamos la vista index y le pasamos valores
         $this->view("index",array(
             "allusers"=>$allusers,
             "allproducts" => null,//$allproducts,
             "Hola"    =>"Soy Víctor Robles"
         ));
+        */
     }
     
     public function salir(){
@@ -37,39 +50,43 @@ class UsuariosController extends ControladorBase{
         //Destruimos la sesión
         $s = Session::getInstance();
         $s->destroy();
+        $this->redirect("Usuarios", "login");
         
     }
     
     public function novalido(){
-        
+        $this->view("login",array(
+            "errorLogin"=>"Usuario o contraseña incorrectos"
+            ));
     }
-    
-    public function principal(){
-        //Recuperamos la sesion
-        $s = Session::getInstance();
-        if (!isset($s->usuario)){
-            $this->redirect("Usuarios", "index");
-        }
-        $this->view("menu",array( ));
-        
-    }
-    
     
     public function comprobar(){
         if(isset($_POST["id"])){
             $usuario=new Usuario($this->adapter);
-            $u = $usuario->getById($_POST["id"]);
+            $u = $usuario->getBy("id", $_POST["id"]);
             if ($u!=null){
-                //Comprobar si la password coincide
-                if (password_verify ($_POST["password"], $u->password))
-                    $usuario->setId($_POST["id"]);
-                    $s = Session::getInstance();
-                    $s->usuario = $usuario;
-                    $this->redirect("Usuarios", "principal");
-                else 
-                    $this->redirect("Usuarios", "novalido");
-            }
+                //Si no tiene contraseña, mandar a un formulario para crear contraseña!!!
+                if (!isset($u[0]->password)){
+                    $this->view("contrasena",array(
+                        "elnuevo"=>$u[0]->id
+                    ));
+                } else {
+                    //Comprobar si la password coincide
+                    if (password_verify ($_POST["password"], $u[0]->password)) {
+                        $usuario->setId($_POST["id"]);
+                        $s = Session::getInstance();
+                        $s->usuario = $usuario;
+                        $this->redirect("Usuarios", "index");
+                    } else
+                        $this->redirect("Usuarios", "novalido");
+                }
+            } else
+                $this->redirect("Usuarios", "novalido");
         }
+    }
+    
+    public function nuevaPassword(){
+        
     }
     
     

@@ -6,6 +6,7 @@ class ControladorBase{
         require_once 'EntidadBase.php';
         require_once 'ModeloBase.php';
         require_once 'Session.php';
+        require_once 'PDF.php';
          
         //Incluir todos los modelos
         foreach(glob("model/*.php") as $file){
@@ -26,7 +27,13 @@ class ControladorBase{
         foreach ($datos as $id_assoc => $valor) {
             ${$id_assoc}=$valor; 
         }
-         
+        if ($vista!="login") {
+            //Recuperamos las editoriales y cursos para que se puedan pintar
+            $nmE = new Editorial($this->adapter);
+            $editoriales = $nmE->getAll();
+            $nmC = new Curso($this->adapter);
+            $cursos = $nmC->getAll();    
+        }
         require_once 'core/AyudaVistas.php';
         $helper=new AyudaVistas();
      
@@ -36,8 +43,6 @@ class ControladorBase{
     public function redirect($controlador=CONTROLADOR_DEFECTO,$accion=ACCION_DEFECTO){
         header("Location:index.php?controller=".$controlador."&action=".$accion);
     }
-     
-    //Métodos para los controladores
- 
+    
 }
 ?>

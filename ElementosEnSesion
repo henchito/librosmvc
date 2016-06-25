@@ -1,0 +1,15 @@
+Elementos en la sesión
+
+usuario     --> Objeto usuario
+
+incluidos   --> Array de Objetos tipo Libro (para acceder a los elementos se usa ->nombre)
+
+total       --> Suma total de los precios de los libros
+
+n           --> Suma total de los precios de los libros que puede aplicarse un 5% de descuento
+
+r           --> Suma total de los precios de los libros que puede aplicarse un 10% de descuento
+
+nif         --> Nif del cliente ya sea que se ha encontrado o no
+
+cliente     --> Valor true en el caso de que se haya encontrado al cliente //Objeto Cliente (en el caso de que exista el nif)

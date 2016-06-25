@@ -16,7 +16,7 @@ class Conectar{
      
     public function conexion(){
          
-        if(($this->driver=="mysql" || $this->driver==null) and $con==null ){ //el and $con==null es nuevo!!!!!
+        if(($this->driver=="mysql" || $this->driver==null) and $con==null ){   //el and $con==null es nuevo!!!!!
             $con=new mysqli($this->host, $this->user, $this->pass, $this->database);
             $con->set_charset( (string) $this->charset);
         }

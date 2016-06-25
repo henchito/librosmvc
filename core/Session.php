@@ -112,11 +112,20 @@ class Session
         {
             $this->sessionState = !session_destroy();
             unset( $_SESSION );
+            $_SESSION= array();
            
             return !$this->sessionState;
         }
        
         return FALSE;
+    }
+    
+    public function meteEnArray($name, $value){
+        $_SESSION[$name][] = $value;
+    }
+    
+    public function quitaDeArray($name, $value){
+        unset($_SESSION[$name][$value]);
     }
 }
 

@@ -7,7 +7,7 @@ class ModeloBase extends EntidadBase{
         $this->table=(string) $table;
         parent::__construct($table, $adapter);
          
-        $this->fluent=$this->getConetar()->startFluent();
+        //$this->fluent=$this->getConetar()->startFluent(); Quito esto a ver si funciona!! 
     }
      
     public function fluent(){
