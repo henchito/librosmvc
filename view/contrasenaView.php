@@ -9,13 +9,13 @@
     </head>
     <body>
         <div class="container">
-            <form class="form-signin" action="<?php echo $helper->url("usuarios","nuevaPassword"); ?>" method="post" onSubmit="validaPss()">
-                <h2 class="form-signin-heading">Escriba su contraseña</h2>
-                
+            <form class="form-signin" action="<?php echo $helper->url("usuarios","nuevaPassword"); ?>" method="post" onSubmit="validaPss()" id="formContra">
+                <h2 class="form-signin-heading">Elija su contraseña</h2>
+                <input type="hidden" name="idusuario" value="<?php echo $elnuevo;?>"/>
                 <input type="password" id="inputP1" name="password1" class="form-control" placeholder="Elija una contraseña" required autofocus>
                 
                 <input type="password" id="inputP2" name="password2" class="form-control" placeholder="Introduzca de nuevo su contraseña" required>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Iniciar sesión</button>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Crear contraseña</button>
             </form>
              <?php if(isset($errorLogin)) { ?>
                 <div class="alert alert-danger sequita" role="alert" style="clear:left;top-margin:5px">
@@ -53,7 +53,7 @@
                   alert("Las passwords deben de coincidir");
                   return false;
                 } else {
-                  alert("Todo esta correcto");
+                  document.getElementById("formContra").submit();
                   return true; 
                 }
             }

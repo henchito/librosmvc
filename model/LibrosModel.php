@@ -17,14 +17,32 @@ class LibrosModel extends ModeloBase{
     }
     
     public function compruebaExiste ($isbn){
-        $query="SELECT id FROM Libro WHERE id='".$isbn."'";
+        $query="SELECT * FROM Libro WHERE id='".$isbn."'";
         $rs=$this->ejecutarSql($query);
-        if (isset($rs[0])){
-            return true;
+        return $rs;
+    }
+    
+    public function cursosDeLibro($isbn){
+        $query="SELECT idcurso FROM LibroCurso WHERE idlibro='".$isbn."'";
+        $rs=$this->ejecutarSql($query);
+        return $rs;
+    }
+    
+    public function replaceLibroCurso($isbn, $cursos){
+        if (count($cursos)){
+            foreach ($cursos as $c){
+                $query="REPLACE LibroCurso (idlibro,idcurso) VALUES (".$isbn.", ".$c.")";
+            }
+        }  else {
+            $query="DELETE FROM LibroCurso WHERE idlibro='".$isbn."'";
         }
-        else {
-            return false;
-        }
+        $this->ejecutarSql($query);
+    }
+    
+    public function librosDeLaEditorial($editorial){
+        $query ="SELECT * from Libro WHERE editorial='".$editorial."' ORDER BY titulo";
+        $rs=$this->ejecutarSql($query);
+        return $rs;
     }
 }
 ?>

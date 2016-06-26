@@ -12,18 +12,18 @@ class FacturasModel extends ModeloBase{
         $query="SELECT id FROM Factura WHERE numero=".$factura->getNumero()." AND nif='".$factura->getNif()."' AND  anyo='".$factura->getAnyo()."' 
             AND descuento=".(int)$factura->getDescuento()." AND tipo='".$factura->getTipo()."' AND usuario='".$factura->getUsuario()."'";
         $id=$this->ejecutarSql($query);
-
         if ($id==false)
-            return -1;
+            $dev=-1;
         else
-            return $id->id;
+            $dev=$id->id;
+        return $dev;
     }
     
     public function facturaLibro($isbn, $id){
         $query="INSERT INTO FacturaLibro (idlibro,idfactura)
                 VALUES(".$isbn.",
                        ".$id.");";
-        $this->ejecutarSql($query);
+        $rs = $this->ejecutarSql($query);
         //Controlar qué devuelve??
     }
     
@@ -36,9 +36,21 @@ class FacturasModel extends ModeloBase{
             $n = 1;
         else
             $n = 0;
-       //Devuelve el último número de factura +1
-       return $n+1;
+        //Devuelve el último número de factura +1
+        return $n+1;
         
+    }
+    
+    public function buscaEntreFechas($inicio, $fin){
+        $query="SELECT * FROM Factura WHERE fecha BETWEEN '".$inicio."' AND '".$fin."' ORDER BY numero ASC";
+        $rs = $this->ejecutarSql($query);
+        return $rs;
+    }
+    
+    public function buscaLibrosDeFactura($id){
+        $query ="SELECT idlibro FROM FacturaLibro WHERE idfactura='".$id."'";
+        $rs = $this->ejecutarSql($query);
+        return $rs;
     }
 }
 ?>

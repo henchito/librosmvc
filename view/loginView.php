@@ -21,6 +21,11 @@
                 <div class="alert alert-danger sequita" role="alert" style="clear:left;top-margin:5px">
                     <strong>Error!</strong> <?php echo $errorLogin; ?>
                 </div>
+            <?php } 
+                if(isset($contraSi)) { ?>
+                    <div class="alert alert-success sequita" role="alert" style="clear:left;top-margin:25px">
+                        <strong>Éxito!</strong> <?php echo $contraSi; ?>
+                    </div>
             <?php } ?>
         </div>
         <footer class="col-lg-12">

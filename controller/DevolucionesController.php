@@ -1,5 +1,5 @@
 <?php
-class FacturasController extends ControladorBase{
+class DevolucionesController extends ControladorBase{
     public $conectar;
     public $adapter;
     
@@ -19,7 +19,7 @@ class FacturasController extends ControladorBase{
             //Buscamos el último número de factura
             $fm = new FacturasModel($this->adapter);
             $s->numFact = $fm->buscaUltimaFactura();
-            $this->view("carrito",array("numFact"=>$s->numFact));
+            $this->view("carritoDevolucion",array("numFact"=>$s->numFact));
         }
     }
     
@@ -31,19 +31,20 @@ class FacturasController extends ControladorBase{
             if (isset($l[0])){
                 $s->meteEnArray("incluidos", $l[0]);
                 $s->total += $l[0]->precio;
-                if ($l[0]->maxDescuento==5) //Añadirmos al descuento de libros 5% el precio del libro
+                if ($l[0]->maxDescuento==5){ //Añadirmos al descuento de libros 5% el precio del libro
                     $s->n += $l[0]->precio;
-                elseif ($l[0]->maxDescuento==10) //Añadirmos al descuento de libros 10% el precio del libro
+                } elseif ($l[0]->maxDescuento==10){ //Añadirmos al descuento de libros 10% el precio del libro
                     $s->r += $l[0]->precio;
+                }
             }
         }
         //Enviamos a la vista los datos necesarios para pintar
-        $this->view("carrito",array(
+        $this->view("carritoDevolucion",array(
                     "incluidos"=>$s->incluidos,
                     "numFact"=>$s->numFact,
-                    "total"=>$s->total,
-                    "n"=>$s->n,
-                    "r"=>$s->r));
+                    "total"=>$s->total*-1,
+                    "n"=>$s->n*-1,
+                    "r"=>$s->r*-1));
     }
     
     public function borrarLibro(){
@@ -69,12 +70,12 @@ class FacturasController extends ControladorBase{
             $libro->deleteById($isbn); */
         }
         // pintar los libros que quedan
-        $this->view("carrito",array(
+        $this->view("carritoDevolucion",array(
                     "incluidos"=>$s->incluidos,
                     "numFact"=>$s->numFact,
-                    "total"=>$s->total,
-                    "n"=>$s->n,
-                    "r"=>$s->r));
+                    "total"=>$s->total*-1,
+                    "n"=>$s->n*-1,
+                    "r"=>$s->r*-1));
     }
     
     public function crearFactura(){
@@ -100,7 +101,7 @@ class FacturasController extends ControladorBase{
         $factura->setNif($s->nif);
         $factura->setAnyo(date("Y"));
         $factura->setDescuento($descuento);
-        $factura->setTipo("V");
+        $factura->setTipo("D");
         $factura->setUsuario($s->usuario->getId());
         $factura->setFecha(date("Y-m-d"));
         $factura->save();
@@ -116,26 +117,26 @@ class FacturasController extends ControladorBase{
         $pdf = new PDF();
         $pdf->AliasNbPages();
         $pdf->AddPage();
-         
+        
         //Cabecera
-        $pdf->arriba("V", $factura->getNumero(), $factura->getAnyo(), date("d-m-Y",strtotime($factura->getFecha())));
+        $pdf->arriba("D", $factura->getNumero(), $factura->getAnyo(), date("d-m-Y",strtotime($factura->getFecha())));
         
         //Cliente
         $pdf->cliente($_POST["nombre"], $s->nif, $_POST["direccion"]);
         
         //Libros
-        $pdf->libros($s->incluidos, "V");
+        $pdf->libros($s->incluidos, "D");
         
         //Sumas
-        $pdf->totales($s->total, $descuento, $s->n, $s->r, "V");
-        $texto = "V".$_POST["numero"].'_'.$factura->getAnyo().'.pdf';
+        $pdf->totales($s->total, $descuento, $s->n, $s->r, "D");
+        $texto = "D".$_POST["numero"].'_'.$factura->getAnyo().'.pdf';
         $this->destruyeFactura();
         $pdf->Output('I', $texto, false);
-
-        //Añadir un elemento vendido en Stock!
+       
+        //Añadir un elemento devuelto en Stock!
         
         //Vaciamos todos los datos de la sesión excepto usuario
-        
+        $this->destruyeFactura();
     }
     
     public function destruyeFactura(){
@@ -146,74 +147,5 @@ class FacturasController extends ControladorBase{
         unset($s->r);
         unset($s->nif);
         unset($s->cliente);
-    }
-    
-    public function informe(){
-        $s = Session::getInstance();
-        if (!isset($s->usuario)){
-            $this->view("login",array());
-        } else {
-            $this->view("informeFacturas",array());
-        }
-    }
-    
-    public function buscaFacturas(){
-        $pdf = new PDF();
-        $pdf->AliasNbPages();
-        $lm = new LibrosModel($this->adapter);
-        $cm = new ClientesModel($this->adapter);
-        $fm = new FacturasModel($this->adapter);
-        
-        //Comprobar que la fecha inicial es menor que la final
-        
-        
-        //Buscamos las facturas entre fechas
-        $rsf=$fm->buscaEntreFechas($_POST["fechaIni"],$_POST["fechaFin"]);
-        if (!is_bool($rsf)){
-            if(is_object($rsf))
-                $rs[]=$rsf;
-            else
-                $rs=$rsf;
-            foreach ($rs as $factura) {
-                $pdf->AddPage();
-                $total=0;
-                $n=0;
-                $r=0;
-                $rl=array();
-                $libros=array();
-                //Buscamos todos los datos de cada libro
-                $rlf = $fm->buscaLibrosDeFactura($factura->id);
-                if(is_object($rlf))
-                    $rl[]=$rlf;
-                else
-                    $rl=$rlf;
-                foreach ($rl as $l){
-                    $uno = $lm->compruebaExiste($l->idlibro);
-                    $libros[]=$uno;
-                    $total += $uno->precio;
-                    if (($uno->maxDescuento == 5) and (($factura->descuento==15) or $factura->descuento==5))
-                        $n += $uno->precio;
-                    if (($uno->maxDescuento == 10) and (($factura->descuento==15) or $factura->descuento==10))
-                        $r += $uno->precio;
-                }
-                //Buscamos los datos del cliente
-                $rc = $cm->buscaClienteDeFactura($factura->nif);
-                
-                /* Creamos el PDF de esta factura */
-                //Cabecera
-                $pdf->arriba($factura->tipo, $factura->numero, $factura->anyo, date("d-m-Y",strtotime($factura->fecha)));
-                //Cliente
-                $pdf->cliente($rc->nombre, $factura->nif, $rc->direccion);
-                //Libros
-                $pdf->libros($libros, $factura->tipo);
-                //Sumas
-                $pdf->totales($total, $factura->descuento, $n, $r, $factura->tipo);
-
-            }
-            $pdf->Output('I', 'InformeFacturas'.'.pdf', false);
-        } else {
-            $this->view("informeFacturas",array(
-                "mensaje"=>"No existe ninguna factura entre las fechas seleccionadas"));
-        }
     }
 }

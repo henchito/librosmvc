@@ -25,6 +25,7 @@ class EditorialesController extends ControladorBase{
                 $incorrecto = "Error al crear la editorial";
             }
             $this->view("menu",array(
+                "tipoU"=>$s->usuario->getTipo(),
                 "editoC"=>$correcto,
                 "editoI"=>$incorrecto
             ));

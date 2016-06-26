@@ -7,9 +7,9 @@ class ModeloBase extends EntidadBase{
         $this->table=(string) $table;
         parent::__construct($table, $adapter);
          
-        //$this->fluent=$this->getConetar()->startFluent(); Quito esto a ver si funciona!! 
+        //$this->fluent=$this->getConetar()->startFluent(); Quito esto a ver si funciona!
     }
-     
+    
     public function fluent(){
         return $this->fluent;
     }
@@ -21,10 +21,12 @@ class ModeloBase extends EntidadBase{
                 while($row = $query->fetch_object()) {
                    $resultSet[]=$row;
                 }
+                $query->close();
             }elseif($query->num_rows==1){
                 if($row = $query->fetch_object()) {
                     $resultSet=$row;
                 }
+                $query->close();
             }else{
                 $resultSet=true;
             }

@@ -33,7 +33,7 @@ class EntidadBase{
         while ($row = $query->fetch_object()) {
            $resultSet[]=$row;
         }
-         
+        $query->close(); 
         return $resultSet;
     }
      
@@ -43,7 +43,7 @@ class EntidadBase{
         if($row = $query->fetch_object()) {
            $resultSet=$row;
         }
-         
+        $query->close(); 
         return $resultSet;
     }
      
@@ -53,7 +53,7 @@ class EntidadBase{
         while($row = $query->fetch_object()) {
            $resultSet[]=$row;
         }
-         
+        $query->close(); 
         return $resultSet;
     }
      

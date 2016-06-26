@@ -18,22 +18,33 @@
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="<?php echo $helper->url("libros", "gestionar"); ?>" target="_blank" class="btn btn-lg btn-warning">
+                <a href="<?php echo $helper->url("devoluciones", "iniciar"); ?>" target="_blank" class="btn btn-lg btn-warning">
+                    Devolución
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="<?php echo $helper->url("libros", "gestionar"); ?>" target="_blank" class="btn btn-lg btn-info">
                     Gestionar libros
                 </a>
             </div>
             <div class="col-md-2">
-                <a href="<?php echo $helper->url("",""); ?>" target="_blank" class="btn btn-lg btn-info">
+                <a href="<?php echo $helper->url("libros","informe"); ?>" target="_blank" class="btn btn-lg btn-info">
                     Informe de libros
                 </a>
             </div>
-            <div class="col-md-3"></div>
+            <div class="col-md-2">
+                <a href="<?php echo $helper->url("facturas","informe"); ?>" target="_blank" class="btn btn-lg btn-info">
+                    Informe facturas
+                </a>
+            </div>
             <div class="col-md-2">
                 <a href="<?php echo $helper->url("Usuarios", "salir"); ?>" target="_self" class="btn btn-lg btn-danger">
                     Cerrar sesión
                 </a>
             </div>
         </div>
+        <?php if(isset($tipoU) and $tipoU=="Administrador") { ?>
+        <!-- Este formulario sólo se muestra a un administrador -->
          <div class="row">
             <div class="col-md-6">
                 <div class="panel panel-primary">
@@ -99,6 +110,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Este formulario sólo se muestra a un administrador -->
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-12">
@@ -125,7 +137,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Este formulario sólo se debe mostrar a un administrador -->
+                <!-- Este formulario sólo se muestra a un administrador -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-default">
@@ -133,24 +145,36 @@
                                 <h3 class="panel-title">Crear usuario</h3>
                             </div>
                             <div class="panel-body">
-                                <form action="<?php echo $helper->url("usaurios","crear"); ?>" method="post" class="col-lg-7" id="usuarioForm">
-                                       <input type="text" name="idUsuario" class="form-control" placeholder="Nombre del usuario"/>
-                                        <button class="btn btn-success" type="submit">Crear editorial</button>
+                                <form action="<?php echo $helper->url("usuarios","crear"); ?>" method="post" class="col-lg-7" id="usuarioForm">
+                                    <input type="text" name="idUsuario" class="form-control" placeholder="Nombre del usuario"/>
+                                    <div class="row">
+                                        <div class="col-lg-2">Tipo: </div>
+                                        <div class="col-lg-5">
+                                            <input type="radio" name="tipo" value="Administrador" />
+                                            Administrador
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <input type="radio" name="tipo" value="Vendedor" />
+                                            Vendedor
+                                        </div>
+                                    </div>    
+                                    <button class="btn btn-success" type="submit">Crear usuario</button>
                                 </form>
-                                <?php if(isset($editoC)) { ?>
+                                <?php if(isset($usuarioC)) { ?>
                                     <div class="alert alert-success sequita" role="alert" style="clear:left;top-margin:25px">
-                                        <strong>Éxito!</strong> <?php echo $editoC; ?>
+                                        <strong>Éxito!</strong> <?php echo $usuarioC; ?>
                                     </div>
                                 <?php } 
-                                    if(isset($editoI)) { ?>
+                                    if(isset($usuarioI)) { ?>
                                     <div class="alert alert-danger sequita" role="alert" style="clear:left;top-margin:5px">
-                                        <strong>Error!</strong> <?php echo $editoI; ?>
+                                        <strong>Error!</strong> <?php echo $usuarioI; ?>
                                     </div>
                                 <?php } ?>
                             </div>
                         </div>
                     </div>
                 </div>
+                <?php } ?> <!-- If de si el tipo de usuario es un Administrador --> 
             </div>
         </div>
         

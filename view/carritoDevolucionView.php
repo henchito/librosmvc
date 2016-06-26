@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-lg-5">
                 <!-- Hay que probar que esto funciona bien o sino controlar el evento del enter -->
-                <form action="<?php echo $helper->url("facturas","anadeLibro"); ?>" method="post"  id="buscaISBNForm">
+                <form action="<?php echo $helper->url("devoluciones","anadeLibro"); ?>" method="post"  id="buscaISBNForm">
                     <input type="text" name="isbn" class="form-control" placeholder="Escriba el isbn" autofocus required maxlength="13"/>
                 </form>
             </div>
@@ -53,7 +53,7 @@
                             <tr>
                                 <td><?php echo $lib->titulo; ?></td>
                                 <td><?php echo $lib->editorial; ?></td>
-                                <td><?php echo $lib->precio; ?></td>
+                                <td><?php echo $lib->precio*-1; ?></td>
                                 <td>
                                     <?php 
                                         if ($lib->maxDescuento==5)
@@ -65,7 +65,7 @@
                                     ?>
                                 </td>
                                 <td>
-                                    <a href="<?php echo $helper->url("facturas","borrarLibro"); ?>&isbn=<?php echo $lib->id; ?>" class="btn btn-danger">Borrar</a>
+                                    <a href="<?php echo $helper->url("devoluciones","borrarLibro"); ?>&isbn=<?php echo $lib->id; ?>" class="btn btn-danger">Borrar</a>
                                 </td>
                             </tr>
                     <?php   } ?>
@@ -76,14 +76,20 @@
                     <?php } ?>
                     <!-- Final de la tabla con el total -->
                     <tr>
-                        <td colspan="2" style="text-align: right;">
+                        <td style="align: right;">
+                            <input type="checkbox" name="descN" value="5" form="facturaTicket">
+                        </td>
+                        <td style="text-align: right;">
                             Descuento 5% (N)
                         </td>
                         <td><?php echo number_format($n*0.05, 2); ?></td>
                         <td colspan="2"></td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="text-align: right;">
+                        <td style="align: right;">
+                            <input type="checkbox" name="descR" value="10" form="facturaTicket">
+                        </td>
+                        <td style="text-align: right;">
                             Descuento 10% (R)
                         </td>
                         <td><?php echo number_format($r*0.1, 2); ?></td>
@@ -104,7 +110,7 @@
             <h4>Cliente</h4>
             <hr/>
             <div class="col-lg-4">
-                <form action="<?php echo $helper->url("clientes","buscaCliente"); ?>" method="post" class="col-lg-12" id="nifCliente">
+                <form action="<?php echo $helper->url("clientes","buscaClienteDevolucion"); ?>" method="post" class="col-lg-12" id="nifCliente">
                         <input type="text" name="nif" class="form-control col-lg-8" placeholder="NIF" pattern="[A-Za-z0-9]{9}" required
                             <?php if (isset($nifC)) echo "value='".$nifC."'"; ?>
                         />
@@ -113,7 +119,7 @@
             </div>
             <div class="col-lg-8">
                 <!-- Habria que intentar hacer una función que cuando se teclee un nif, busque automáticamente el cliente AJAX!! -->
-                <form action="<?php echo $helper->url("facturas","crearFactura"); ?>" method="post" class="col-lg-12" id="facturaTicket">
+                <form action="<?php echo $helper->url("devoluciones","crearFactura"); ?>" method="post" class="col-lg-12" id="facturaTicket">
                         Número de factura
                         <input type="number" name="numero" class="form-control" placeholder="Número de factura" required 
                             <?php 
@@ -139,17 +145,7 @@
                                     echo " value='".$direccionC."'";
                             ?>
                         />
-                        <div class="row">
-                            <div class="col-lg-2">Descuento: </div>
-                            <div class="col-lg-2"></div>
-                            <div class="col-lg-2">5 %</div>
-                            <input type="checkbox" name="descN" value="5" class="col-lg-2">
-                            <div class="col-lg-2">10 %</div>
-                            <input type="checkbox" name="descR" value="10" class="col-lg-2">
-                        </div>
-                        <div class="row">
-                            <button class="btn btn-success" type="submit">Facturar</button>
-                        </div>
+                        <button class="btn btn-success" type="submit">Facturar</button>
                 </form>
             </div>
         </div>

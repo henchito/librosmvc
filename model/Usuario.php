@@ -43,6 +43,15 @@ class Usuario extends EntidadBase{
         //$this->db()->error;
         return $save;
     }
+    
+    public function update(){
+        $query="UPDATE Usuario SET 
+                    password='".$this->password."'
+                WHERE id='".$this->id."';";
+        $save=$this->db()->query($query);
+        //$this->db()->error;
+        return $save;
+    }
  
 }
 ?>

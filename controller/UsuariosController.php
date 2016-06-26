@@ -18,7 +18,7 @@ class UsuariosController extends ControladorBase{
             $this->view("login",array());
         } else {
             //Usuario logeado
-            $this->view("menu",array( ));
+            $this->view("menu",array("tipoU"=>$s->usuario->getTipo()));
         }
         
         
@@ -66,7 +66,7 @@ class UsuariosController extends ControladorBase{
             $u = $usuario->getBy("id", $_POST["id"]);
             if ($u!=null){
                 //Si no tiene contraseña, mandar a un formulario para crear contraseña!!!
-                if (!isset($u[0]->password)){
+                if ($u[0]->password==null){
                     $this->view("contrasena",array(
                         "elnuevo"=>$u[0]->id
                     ));
@@ -74,6 +74,7 @@ class UsuariosController extends ControladorBase{
                     //Comprobar si la password coincide
                     if (password_verify ($_POST["password"], $u[0]->password)) {
                         $usuario->setId($_POST["id"]);
+                        $usuario->setTipo($u[0]->tipo);
                         $s = Session::getInstance();
                         $s->usuario = $usuario;
                         $this->redirect("Usuarios", "index");
@@ -86,27 +87,44 @@ class UsuariosController extends ControladorBase{
     }
     
     public function nuevaPassword(){
-        
+        if ($_POST["password1"]==$_POST["password2"]){
+
+            $usuario = new Usuario($this->adapter);
+            $usuario->setId($_POST["idusuario"]);
+            $usuario->setPassword(password_hash($_POST["password1"],PASSWORD_DEFAULT));
+            $usuario->update();
+            $this->view("login",array(
+                "contraSi"=>"Contraseña creada correctamente"
+                ));
+        } else{
+            $this->view("contrasena",array(
+                        "elnuevo"=>$_POST["idusuario"],
+                        "errorLogin"=>"Las contraseñas no coinciden"
+                    ));
+        }
     }
     
-    
-    
-    /* Para más adelante */
     public function crear(){
-        if(isset($_POST["id"])){
-             
+        $s = Session::getInstance();
+        if(isset($_POST["idUsuario"])){
             //Creamos un usuario
             $usuario=new Usuario($this->adapter);
-            
-            //Comprobar que no se mete morralla en los datos para sqlexploit
-            
-            $usuario->setId($_POST["id"]);
-            $usuario->setPassword(password_hash($_POST["password"],PASSWORD_DEFAULT));
-            $save=$usuario->save();
-        }
-        $this->redirect("Usuarios", "index");
+            $usuario->setId($_POST["idUsuario"]);
+            //$usuario->setPassword(null);
+            $usuario->setTipo($_POST["tipo"]);
+            //$usuario->setPassword(password_hash($_POST["password"],PASSWORD_DEFAULT));
+            $usuario->save();
+            $correcto="Usuario '".$_POST["idUsuario"]."' creado correctamente";
+        } else
+            $incorrecto="No se ha podido crear el usuario";
+        $this->view("menu",array(
+            "tipoU"=>$s->usuario->getTipo(),
+            "usuarioC"=>$correcto,
+            "usuarioI"=>$incorrecto
+            ));
     }
-     
+    
+     /* Para más adelante */ 
     public function borrar(){
         if(isset($_GET["id"])){ 
             $id=(int)$_GET["id"];
