@@ -16,9 +16,9 @@
                 <form action="<?php echo $helper->url("facturas","buscaFacturas"); ?>" method="post"  id="buscaFacturas">
                     <!-- Seleccion de fechas -->
                     Fecha de inicio:
-                    <input type="date" name="fechaIni" min="2016-01-01" />
+                    <input type="date" name="fechaIni" min="2016-01-01" /><br/>
                     Fecha final:
-                    <input type="date" name="fechaFin" max="<?php date("Y-m-d"); ?>" />
+                    <input type="date" name="fechaFin" max="<?php date("Y-m-d"); ?>" /><br/>
                     
                     <button class="btn btn-success" type="submit">Listado</button>
                 </form>

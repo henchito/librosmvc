@@ -12,7 +12,7 @@ class FacturasModel extends ModeloBase{
         $query="SELECT id FROM Factura WHERE numero=".$factura->getNumero()." AND nif='".$factura->getNif()."' AND  anyo='".$factura->getAnyo()."' 
             AND descuento=".(int)$factura->getDescuento()." AND tipo='".$factura->getTipo()."' AND usuario='".$factura->getUsuario()."'";
         $id=$this->ejecutarSql($query);
-        if ($id==false)
+        if (is_bool($id) and $id==true)
             $dev=-1;
         else
             $dev=$id->id;

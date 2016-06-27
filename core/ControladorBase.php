@@ -7,6 +7,9 @@ class ControladorBase{
         require_once 'ModeloBase.php';
         require_once 'Session.php';
         require_once 'PDF.php';
+        require_once 'Mailer/class.phpmailer.php';
+	    require_once 'Mailer/PHPMailerAutoload.php';
+	    require_once 'Mailer/class.phpmaileroauthgoogle.php';
          
         //Incluir todos los modelos
         foreach(glob("model/*.php") as $file){

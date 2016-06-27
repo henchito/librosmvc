@@ -53,49 +53,51 @@
                     </div>
                     <div class="panel-body">
                         <form action="<?php echo $helper->url("libros","crear"); ?>" method="post" class="col-lg-12" id="libroForm">
-                            <input type="text" name="id" class="col-lg-8" placeholder="ISBN" required maxlength="13"/>
-                            <input type="text" name="titulo" class="col-lg-8" placeholder="Título" required/>
-                            <input type="text" name="edicion" class="col-lg-8" placeholder="Edición" />
-                            <input type="text" name="proyecto" class="col-lg-8" placeholder="Proyecto" />
-                            <!-- Select para las editoriales -->
-                            <?php if(isset($editoriales) && count($editoriales)>=1) { ?>
-                                <select name="editorial" class="col-lg-8" required>
-                                    <option value="" default selected>Editorial</option>
-                                    <?php foreach ($editoriales as $editorial) { ?>
-                                        <option value="<?php echo $editorial->id; ?>"><?php echo $editorial->id ?></option>
-                                    <?php } ?>
+                            <div class="row">
+                                <input type="text" name="id" class="col-lg-8" placeholder="ISBN" required maxlength="13"/>
+                                <input type="text" name="titulo" class="col-lg-8" placeholder="Título" required/>
+                                <input type="text" name="edicion" class="col-lg-8" placeholder="Edición" />
+                                <input type="text" name="proyecto" class="col-lg-8" placeholder="Proyecto" />
+                                <!-- Select para las editoriales -->
+                                <?php if(isset($editoriales) && count($editoriales)>=1) { ?>
+                                    <select name="editorial" class="col-lg-8" required>
+                                        <option value="" default selected>Editorial</option>
+                                        <?php foreach ($editoriales as $editorial) { ?>
+                                            <option value="<?php echo $editorial->id; ?>"><?php echo $editorial->id ?></option>
+                                        <?php } ?>
+                                    </select>
+                                <?php } ?>
+                                <input type="number" name="precio" class="col-lg-8" placeholder="Precio" step="0.01" />
+                                <select name="maxDescuento" class="col-lg-8" required>
+                                    <option value="" default selected>Tipo de libro</option>
+                                    <option value="5">Infantil / Bachillerato / Lectura / Diccionario</option>
+                                    <option value="10">EPO / ESO</option>
                                 </select>
-                            <?php } ?>
-                            <input type="number" name="precio" class="col-lg-8" placeholder="Precio" step="0.01" />
-                            <select name="maxDescuento" class="col-lg-8" required>
-                                <option value="" default selected>Tipo de libro</option>
-                                <option value="5">2 años / Bachillerato / Lectura / Diccionario</option>
-                                <option value="10">Infantil / EPO / ESO</option>
-                            </select>
-                            <!-- Checkbox para los cursos -->
-                            <div class="col-lg-5">
-                                <div class="list-group">
-                            <?php if(isset($cursos) && count($cursos)>=1) { 
-                                $i=0;
-                                foreach ($cursos as $curso) { ?>
-                                    <div class="list-group-item">
-                                        <input type="checkbox" name="curso[]" class="" value="<?php echo $curso->id; ?>"/>
-                            <?php
-                                        echo $curso->numero.' '.$curso->ciclo;
-                                        $i++;
-                            ?>
-                                        
+                                <!-- Checkbox para los cursos -->
+                                <div class="col-lg-5">
+                                    <div class="list-group">
+                                <?php if(isset($cursos) && count($cursos)>=1) { 
+                                    $i=0;
+                                    foreach ($cursos as $curso) { ?>
+                                        <div class="list-group-item">
+                                            <input type="checkbox" name="curso[]" class="" value="<?php echo $curso->id; ?>"/>
+                                <?php
+                                            echo $curso->numero.' '.$curso->ciclo;
+                                            $i++;
+                                ?>
+                                            
+                                        </div>
+                                <?php 
+                                        if ($i%10==0)
+                                            echo "</div></div><div class='col-lg-6'><div class='list-group'>";
+                                    }
+                                } ?>
                                     </div>
-                            <?php 
-                                    if ($i%10==0)
-                                        echo "</div></div><div class='col-lg-6'><div class='list-group'>";
-                                }
-                            } ?>
                                 </div>
                             </div>
-                            
-                           
-                            <button class="btn btn-success" type="submit">Crear libro</button>
+                            <div class="row">
+                                <button class="btn btn-success" type="submit">Crear libro</button>
+                            </div>
                         </form>
                         <?php if(isset($libritoC)) { ?>
                             <div class="alert alert-success sequita" role="alert" style="clear:left;top-margin:25px">

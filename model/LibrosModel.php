@@ -44,5 +44,12 @@ class LibrosModel extends ModeloBase{
         $rs=$this->ejecutarSql($query);
         return $rs;
     }
+    
+    public function librosDeCurso($idcurso){
+        $query ="SELECT * FROM Libro JOIN LibroCurso ON Libro.id=LibroCurso.idlibro AND LibroCurso.idcurso=".$idcurso.";";
+        //Probar esta sentencia
+        $rs=$this->ejecutarSql($query);
+        return $rs;
+    }
 }
 ?>
