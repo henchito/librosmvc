@@ -142,12 +142,14 @@ public function totales($total, $descuento, $n, $r, $tipo){
     else
         $this->Cell(40, 6, ($iva*-1)." ".chr(128), 0, 1, 'R', false);
     //Gastos de gestion
-    $gestion = 2;
-    $this->Cell(140, 6, utf8_decode("Gastos de gestión    "), 0, 0, 'R', false);
-    if ($tipo=="V")
+    if ($tipo="V") {
+        $gestion = 2;
+        $this->Cell(140, 6, utf8_decode("Gastos de gestión    "), 0, 0, 'R', false);
         $this->Cell(40, 6, $gestion." ".chr(128), 0, 1, 'R', false);
-    else
-        $this->Cell(40, 6, ($gestion*-1)." ".chr(128), 0, 1, 'R', false);
+    } else {
+        $gestion=0;
+    }
+    /* else $this->Cell(40, 6, ($gestion*-1)." ".chr(128), 0, 1, 'R', false); */
     //TOTAL
     $tt = number_format($st+$iva+$gestion, 2);
     $this->SetFont('Arial','B',14);

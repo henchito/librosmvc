@@ -22,13 +22,13 @@
                 <button class="btn btn-success" type="submit" form="buscaISBNForm" style="margin-top: 0px;">Buscar</button>
             </div>
             <div class="col-lg-2">
-                 <a href="<?php echo $helper->url("", ""); ?>" target="_self" class="btn btn-lg btn-info" style="margin-top: 0px;">
+                 <a href="<?php echo $helper->url("devoluciones", "inicioBuscaManual"); ?>" target="_self" class="btn btn-lg btn-info" style="margin-top: 0px;">
                     Búsqueda manual
                 </a>
             </div>
         </div>
          <div class="col-lg-7">
-            <h3>Factura</h3>
+            <h3>Devolución</h3>
             <hr/>
         </div>
         <div class=row>
@@ -75,26 +75,26 @@
                             </tr>
                     <?php } ?>
                     <!-- Final de la tabla con el total -->
+                    <?php if(isset($n)) { ?>
                     <tr>
-                        <td style="align: right;">
-                            <input type="checkbox" name="descN" value="5" form="facturaTicket">
-                        </td>
-                        <td style="text-align: right;">
+                        <td colspan="2" style="text-align: right;">
                             Descuento 5% (N)
                         </td>
                         <td><?php echo number_format($n*0.05, 2); ?></td>
                         <td colspan="2"></td>
                     </tr>
+                    <?php 
+                        } 
+                        if(isset($r)) { 
+                    ?>
                     <tr>
-                        <td style="align: right;">
-                            <input type="checkbox" name="descR" value="10" form="facturaTicket">
-                        </td>
-                        <td style="text-align: right;">
+                        <td colspan="2" style="text-align: right;">
                             Descuento 10% (R)
                         </td>
                         <td><?php echo number_format($r*0.1, 2); ?></td>
                         <td colspan="2"></td>
                     </tr>
+                    <?php } ?>
                     <tr>
                         <th colspan="2" style="text-align: right;">
                             TOTAL
@@ -145,7 +145,20 @@
                                     echo " value='".$direccionC."'";
                             ?>
                         />
-                        <button class="btn btn-success" type="submit">Facturar</button>
+                        <div class="row">
+                            <div class="col-lg-2">Descuento: </div>
+                            <div class="col-lg-2"></div>
+                            <?php if (isset($n)) { ?>
+                                <div class="col-lg-2">5 %</div>
+                                <input type="checkbox" name="descN" value="5" class="col-lg-2" checked />
+                            <?php } if (isset($r)) { ?>
+                                <div class="col-lg-2">10 %</div>
+                                <input type="checkbox" name="descR" value="10" class="col-lg-2" checked />
+                            <?php } ?>
+                        </div>
+                        <div class="row">
+                            <button class="btn btn-success" type="submit">Facturar</button>
+                        </div>
                 </form>
             </div>
         </div>

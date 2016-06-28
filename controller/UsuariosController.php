@@ -84,6 +84,7 @@ class UsuariosController extends ControladorBase{
             } else
                 $this->redirect("Usuarios", "novalido");
         }
+        $this->redirect("Usuarios", "index");
     }
     
     public function nuevaPassword(){

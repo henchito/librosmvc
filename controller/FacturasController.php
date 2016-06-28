@@ -9,7 +9,8 @@ class FacturasController extends ControladorBase{
         $this->conectar=new Conectar();
         $this->adapter=$this->conectar->conexion();
     }
-     
+    
+    /*** Función para iniciar el carrito para la creación de Facturas ***/
     public function iniciar(){
         $s = Session::getInstance();
         if (!isset($s->usuario)){
@@ -23,6 +24,7 @@ class FacturasController extends ControladorBase{
         }
     }
     
+    /*** Función para añadir un libro al carrito ***/
     public function anadeLibro(){
         $s = Session::getInstance();
         if(isset($_POST["isbn"])){
@@ -46,6 +48,7 @@ class FacturasController extends ControladorBase{
                     "r"=>$s->r));
     }
     
+    /*** Función para eliminar un libro del carrito ***/
     public function borrarLibro(){
         
          if(isset($_GET["isbn"])){ 
@@ -63,10 +66,6 @@ class FacturasController extends ControladorBase{
                     
                 }
             }
-
-            /* Esto se haría si hay que borrarlo de la base de datos
-            $libro=new Libro($this->adapter);
-            $libro->deleteById($isbn); */
         }
         // pintar los libros que quedan
         $this->view("carrito",array(
@@ -77,6 +76,7 @@ class FacturasController extends ControladorBase{
                     "r"=>$s->r));
     }
     
+    /*** Función para crear la Factura ***/
     public function crearFactura(){
         $descuento=0;
         if(isset($_POST["descN"])){
@@ -94,7 +94,7 @@ class FacturasController extends ControladorBase{
             $cliente->setDireccion($_POST["direccion"]);
             $cliente->save();
         }
-         
+        /*** Creación de la Factura en la BBDD ***/ 
         $factura = new Factura($this->adapter);
         $factura->setNumero($_POST["numero"]);
         $factura->setNif($s->nif);
@@ -112,7 +112,7 @@ class FacturasController extends ControladorBase{
              $fm->facturaLibro($v->id, $factura->getId());
         }
 
-        //Aquí habría que general el PDF y redirigir para mostrarlo y poder imprimir
+        /*** Inicio de Generar el PDF ***/
         $pdf = new PDF();
         $pdf->AliasNbPages();
         $pdf->AddPage();
@@ -129,15 +129,18 @@ class FacturasController extends ControladorBase{
         //Sumas
         $pdf->totales($s->total, $descuento, $s->n, $s->r, "V");
         $texto = "V".$_POST["numero"].'_'.$factura->getAnyo().'.pdf';
+        //Vaciamos todos los datos de la sesión excepto usuario
         $this->destruyeFactura();
+        //Imprimimos el PDF
         $pdf->Output('I', $texto, false);
 
         //Añadir un elemento vendido en Stock!
         
-        //Vaciamos todos los datos de la sesión excepto usuario
+        
         
     }
     
+    /* Funcion para borrar los datos de la Factura guardados en la sesión */
     public function destruyeFactura(){
         $s = Session::getInstance();
         unset($s->incluidos);
@@ -148,6 +151,7 @@ class FacturasController extends ControladorBase{
         unset($s->cliente);
     }
     
+    /* Funcion para iniciar la impresión de Facturas entre fechas */
     public function informe(){
         $s = Session::getInstance();
         if (!isset($s->usuario)){
@@ -157,6 +161,7 @@ class FacturasController extends ControladorBase{
         }
     }
     
+    /* Funcion para la impresión de Facturas entre fechas */
     public function buscaFacturas(){
         $pdf = new PDF();
         $pdf->AliasNbPages();
@@ -214,6 +219,33 @@ class FacturasController extends ControladorBase{
         } else {
             $this->view("informeFacturas",array(
                 "mensaje"=>"No existe ninguna factura entre las fechas seleccionadas"));
+        }
+    }
+    
+    public function inicioBuscaManual(){
+        $s = Session::getInstance();
+        if (!isset($s->usuario)){
+            $this->view("login",array());
+        } else {
+            $this->view("buscaLibro",array());
+        }
+    }
+    
+    public function buscaPorTitulo() {
+        $lm = new LibroModel($this->adapter);
+        $l = $lm->libroPorTitulo($_POST["titulo"]);
+        if($l===true){
+            $this->view("buscaLibro",array(
+                "errorL"=>"No se ha encontrado ningún libro por ese título"
+                ));
+        } else{
+            if (is_object($l))
+                $libros[]=$l;
+            if (is_array($l))
+                $libros=$l;
+            $this->view("buscaLibro",array(
+                "loslibros"=>$libros
+                ));
         }
     }
 }

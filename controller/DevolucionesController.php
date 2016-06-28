@@ -9,7 +9,8 @@ class DevolucionesController extends ControladorBase{
         $this->conectar=new Conectar();
         $this->adapter=$this->conectar->conexion();
     }
-     
+    
+    /*** Función para iniciar el carrito para la creación de Devoluciones ***/
     public function iniciar(){
         $s = Session::getInstance();
         if (!isset($s->usuario)){
@@ -23,6 +24,7 @@ class DevolucionesController extends ControladorBase{
         }
     }
     
+    /*** Función para añadir un libro al carrito ***/
     public function anadeLibro(){
         $s = Session::getInstance();
         if(isset($_POST["isbn"])){
@@ -47,6 +49,7 @@ class DevolucionesController extends ControladorBase{
                     "r"=>$s->r*-1));
     }
     
+    /*** Función para eliminar un libro del carrito ***/
     public function borrarLibro(){
         
          if(isset($_GET["isbn"])){ 
@@ -64,10 +67,6 @@ class DevolucionesController extends ControladorBase{
                     
                 }
             }
-
-            /* Esto se haría si hay que borrarlo de la base de datos
-            $libro=new Libro($this->adapter);
-            $libro->deleteById($isbn); */
         }
         // pintar los libros que quedan
         $this->view("carritoDevolucion",array(
@@ -78,6 +77,7 @@ class DevolucionesController extends ControladorBase{
                     "r"=>$s->r*-1));
     }
     
+    /*** Función para crear la Factura de Devolución***/
     public function crearFactura(){
         $descuento=0;
         if(isset($_POST["descN"])){
@@ -130,15 +130,17 @@ class DevolucionesController extends ControladorBase{
         //Sumas
         $pdf->totales($s->total, $descuento, $s->n, $s->r, "D");
         $texto = "D".$_POST["numero"].'_'.$factura->getAnyo().'.pdf';
+        //Vaciamos todos los datos de la sesión excepto usuario
         $this->destruyeFactura();
         $pdf->Output('I', $texto, false);
        
         //Añadir un elemento devuelto en Stock!
         
-        //Vaciamos todos los datos de la sesión excepto usuario
-        $this->destruyeFactura();
+        
+        
     }
     
+    /* Funcion para borrar los datos de la Factura guardados en la sesión */
     public function destruyeFactura(){
         $s = Session::getInstance();
         unset($s->incluidos);
@@ -147,5 +149,32 @@ class DevolucionesController extends ControladorBase{
         unset($s->r);
         unset($s->nif);
         unset($s->cliente);
+    }
+    
+    public function inicioBuscaManual(){
+        $s = Session::getInstance();
+        if (!isset($s->usuario)){
+            $this->view("login",array());
+        } else {
+            $this->view("buscaLibroDevo",array());
+        }
+    }
+    
+    public function buscaPorTitulo() {
+        $lm = new LibroModel($this->adapter);
+        $l = $lm->libroPorTitulo($_POST["titulo"]);
+        if($l===true){
+            $this->view("buscaLibroDevo",array(
+                "errorL"=>"No se ha encontrado ningún libro por ese título"
+                ));
+        } else{
+            if (is_object($l))
+                $libros[]=$l;
+            if (is_array($l))
+                $libros=$l;
+            $this->view("buscaLibroDevo",array(
+                "loslibros"=>$libros
+                ));
+        }
     }
 }
