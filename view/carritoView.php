@@ -27,6 +27,13 @@
                 </a>
             </div>
         </div>
+        <div class="row">
+            <?php if(isset($errorL)) { ?>
+                    <div class="alert alert-danger sequita" role="alert" style="clear:left;top-margin:5px">
+                        <strong>Error!</strong> <?php echo $errorL; ?>
+                    </div>
+            <?php } ?>
+        </div>
          <div class="col-lg-7">
             <h3>Factura</h3>
             <hr/>

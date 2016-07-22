@@ -37,6 +37,14 @@ class FacturasController extends ControladorBase{
                     $s->n += $l[0]->precio;
                 elseif ($l[0]->maxDescuento==10) //Añadirmos al descuento de libros 10% el precio del libro
                     $s->r += $l[0]->precio;
+            } else {
+                $this->view("carrito",array(
+                    "incluidos"=>$s->incluidos,
+                    "numFact"=>$s->numFact,
+                    "total"=>$s->total,
+                    "n"=>$s->n,
+                    "r"=>$s->r,
+                    "errorL"=>"No se ha encontrado ningún libro por ese ISBN"));
             }
         }
         //Enviamos a la vista los datos necesarios para pintar
@@ -107,9 +115,21 @@ class FacturasController extends ControladorBase{
         //Recuperamos el id de factura
         $fm = new FacturasModel($this->adapter);
         $factura->setId($fm->getIdDeFactura($factura));
+        //Clase para añadir un elemento vendido en Stock
+        //$sm = new StockModel($this->adapter);
         //Recorremos la lista de libros incluidos en la factura y los insertamos en la tabla FacturaLibro
         foreach ($s->incluidos as $libro => $v){
              $fm->facturaLibro($v->id, $factura->getId());
+             /*
+             $rst = $sm->buscaStock($v->id, $factura->getAnyo());
+             $st = new Stock($this->adapter);
+             $st->setId($v->id);
+             $st->setAnyo($factura->getAnyo());
+             $st->setRecibidos($rst->recibidos);
+             $st->setDevueltos($rst->devueltos);
+             $st->setVendidos($rst->recibidos+1);
+             $st->update();
+             */
         }
 
         /*** Inicio de Generar el PDF ***/
@@ -133,11 +153,6 @@ class FacturasController extends ControladorBase{
         $this->destruyeFactura();
         //Imprimimos el PDF
         $pdf->Output('I', $texto, false);
-
-        //Añadir un elemento vendido en Stock!
-        
-        
-        
     }
     
     /* Funcion para borrar los datos de la Factura guardados en la sesión */
@@ -232,12 +247,17 @@ class FacturasController extends ControladorBase{
     }
     
     public function buscaPorTitulo() {
-        $lm = new LibroModel($this->adapter);
+        $lm = new LibrosModel($this->adapter);
         $l = $lm->libroPorTitulo($_POST["titulo"]);
         if($l===true){
-            $this->view("buscaLibro",array(
-                "errorL"=>"No se ha encontrado ningún libro por ese título"
-                ));
+            $s = Session::getInstance();
+            $this->view("carrito",array(
+                    "incluidos"=>$s->incluidos,
+                    "numFact"=>$s->numFact,
+                    "total"=>$s->total,
+                    "n"=>$s->n,
+                    "r"=>$s->r,
+                    "errorL"=>"No se ha encontrado ningún libro por ese título"));
         } else{
             if (is_object($l))
                 $libros[]=$l;

@@ -38,6 +38,14 @@ class DevolucionesController extends ControladorBase{
                 } elseif ($l[0]->maxDescuento==10){ //Añadirmos al descuento de libros 10% el precio del libro
                     $s->r += $l[0]->precio;
                 }
+            } else {
+                $this->view("carritoDevolucion",array(
+                    "incluidos"=>$s->incluidos,
+                    "numFact"=>$s->numFact,
+                    "total"=>$s->total,
+                    "n"=>$s->n,
+                    "r"=>$s->r,
+                    "errorL"=>"No se ha encontrado ningún libro por ese ISBN"));
             }
         }
         //Enviamos a la vista los datos necesarios para pintar
@@ -108,12 +116,24 @@ class DevolucionesController extends ControladorBase{
         //Recuperamos el id de factura
         $fm = new FacturasModel($this->adapter);
         $factura->setId($fm->getIdDeFactura($factura));
+        //Clase para añadir un elemento devuelto en Stock
+        //$sm = new StockModel($this->adapter);
         //Recorremos la lista de libros incluidos en la factura y los insertamos en la tabla FacturaLibro
         foreach ($s->incluidos as $libro => $v){
              $fm->facturaLibro($v->id, $factura->getId());
+             /*
+             $rst = $sm->buscaStock($v->id, $factura->getAnyo());
+             $st = new Stock($this->adapter);
+             $st->setId($v->id);
+             $st->setAnyo($factura->getAnyo());
+             $st->setRecibidos($rst->recibidos);
+             $st->setVendidos($rst->recibidos);
+             $st->setDevueltos($rst->devueltos+1);
+             $st->update();
+             */
         }
 
-        //Aquí habría que general el PDF y redirigir para mostrarlo y poder imprimir
+        //Genera el PDF y redirigir para mostrarlo y poder imprimir
         $pdf = new PDF();
         $pdf->AliasNbPages();
         $pdf->AddPage();
@@ -133,11 +153,6 @@ class DevolucionesController extends ControladorBase{
         //Vaciamos todos los datos de la sesión excepto usuario
         $this->destruyeFactura();
         $pdf->Output('I', $texto, false);
-       
-        //Añadir un elemento devuelto en Stock!
-        
-        
-        
     }
     
     /* Funcion para borrar los datos de la Factura guardados en la sesión */
@@ -161,12 +176,17 @@ class DevolucionesController extends ControladorBase{
     }
     
     public function buscaPorTitulo() {
-        $lm = new LibroModel($this->adapter);
+        $lm = new LibrosModel($this->adapter);
         $l = $lm->libroPorTitulo($_POST["titulo"]);
         if($l===true){
-            $this->view("buscaLibroDevo",array(
-                "errorL"=>"No se ha encontrado ningún libro por ese título"
-                ));
+            $s = Session::getInstance();
+            $this->view("carritoDevolucion",array(
+                    "incluidos"=>$s->incluidos,
+                    "numFact"=>$s->numFact,
+                    "total"=>$s->total,
+                    "n"=>$s->n,
+                    "r"=>$s->r,
+                    "errorL"=>"No se ha encontrado ningún libro por ese título"));
         } else{
             if (is_object($l))
                 $libros[]=$l;
