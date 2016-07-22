@@ -21,11 +21,20 @@
             <div class="col-lg-1">
                 <button class="btn btn-success" type="submit" form="buscaISBNForm" style="margin-top: 0px;">Buscar</button>
             </div>
+            <!--
             <div class="col-lg-2">
-                 <a href="<?php echo $helper->url("", ""); ?>" target="_self" class="btn btn-lg btn-info" style="margin-top: 0px;">
+                 <a href="<?php /*echo $helper->url("", ""); */?>" target="_self" class="btn btn-lg btn-info" style="margin-top: 0px;">
                     Búsqueda manual
                 </a>
             </div>
+            -->
+        </div>
+        <div class="row">
+            <?php if(isset($errorL)) { ?>
+                    <div class="alert alert-danger sequita" role="alert" style="clear:left;top-margin:5px">
+                        <strong>Error!</strong> <?php echo $errorL; ?>
+                    </div>
+            <?php } ?>
         </div>
          <div class="col-lg-12">
             <h3>Libros</h3>

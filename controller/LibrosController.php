@@ -63,14 +63,20 @@ class LibrosController extends ControladorBase{
         
         $lm = new LibrosModel($this->adapter);
         $e = $lm->compruebaExiste($_POST["isbn"]);
-        $crl = $lm->cursosDeLibro($_POST["isbn"]);
-        if (is_object($crl))
-            $cr[] = $crl;
-        if (is_object($e)) {
-            $this->view("modificaLibro", array(
-                "libro"=>$e,
-                "cursosL"=>$cr
+        if ($e===true) {
+            $this->view("modificaLibro",array(
+                "errorL"=>"No se ha encontrado ningún libro por ese ISBN"
                 ));
+        } else {
+            $crl = $lm->cursosDeLibro($_POST["isbn"]);
+            if (is_object($crl))
+                $cr[] = $crl;
+            if (is_object($e)) {
+                $this->view("modificaLibro", array(
+                    "libro"=>$e,
+                    "cursosL"=>$cr
+                    ));
+            }
         }
     }
     
@@ -95,6 +101,8 @@ class LibrosController extends ControladorBase{
             "mensaje"=>"Libro modificado correctamente"
             ));
     }
+    
+    
     
     /* FUNCIONES PARA MOSTRAR EL INFORME DE LIBROS */
     public function informe(){
